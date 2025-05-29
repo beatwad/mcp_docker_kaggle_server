@@ -45,18 +45,20 @@ def init_competition_tools(mcp_instance):
             result = []
 
             for comp in competitions:
-                deadline_val = getattr(comp, 'deadline', None)
+                deadline_val = getattr(comp, "deadline", None)
                 result.append(
                     {
-                        "ref": getattr(comp, 'ref', None),
-                        "title": getattr(comp, 'title', None),
-                        "url": getattr(comp, 'url', None),
-                        "category": getattr(comp, 'category', None),
+                        "ref": getattr(comp, "ref", None),
+                        "title": getattr(comp, "title", None),
+                        "url": getattr(comp, "url", None),
+                        "category": getattr(comp, "category", None),
                         "deadline": str(deadline_val) if deadline_val else None,
-                        "reward": getattr(comp, 'reward', None),
-                        "teamCount": getattr(comp, 'teamCount', None), # Safely access teamCount
-                        "userHasEntered": getattr(comp, 'userHasEntered', None),
-                        "description": getattr(comp, 'description', None),
+                        "reward": getattr(comp, "reward", None),
+                        "teamCount": getattr(
+                            comp, "teamCount", None
+                        ),  # Safely access teamCount
+                        "userHasEntered": getattr(comp, "userHasEntered", None),
+                        "description": getattr(comp, "description", None),
                     }
                 )
 
@@ -82,20 +84,26 @@ def init_competition_tools(mcp_instance):
 
         try:
             comp = api.competition_get(competition)
-            deadline_val = getattr(comp, 'deadline', None)
+            deadline_val = getattr(comp, "deadline", None)
             result = {
-                "ref": getattr(comp, 'ref', None),
-                "title": getattr(comp, 'title', None),
-                "url": getattr(comp, 'url', None),
-                "category": getattr(comp, 'category', None),
+                "ref": getattr(comp, "ref", None),
+                "title": getattr(comp, "title", None),
+                "url": getattr(comp, "url", None),
+                "category": getattr(comp, "category", None),
                 "deadline": str(deadline_val) if deadline_val else None,
-                "reward": getattr(comp, 'reward', None),
-                "teamCount": getattr(comp, 'teamCount', None), # Safely access teamCount
-                "userHasEntered": getattr(comp, 'userHasEntered', None),
-                "description": getattr(comp, 'description', None),
-                "evaluationMetric": getattr(comp, 'evaluationMetric', None),
-                "isKernelsSubmissionsOnly": getattr(comp, 'isKernelsSubmissionsOnly', None),
-                "tags": getattr(comp, 'tags', []), # Assuming tags is a list, default to empty
+                "reward": getattr(comp, "reward", None),
+                "teamCount": getattr(
+                    comp, "teamCount", None
+                ),  # Safely access teamCount
+                "userHasEntered": getattr(comp, "userHasEntered", None),
+                "description": getattr(comp, "description", None),
+                "evaluationMetric": getattr(comp, "evaluationMetric", None),
+                "isKernelsSubmissionsOnly": getattr(
+                    comp, "isKernelsSubmissionsOnly", None
+                ),
+                "tags": getattr(
+                    comp, "tags", []
+                ),  # Assuming tags is a list, default to empty
             }
             return json.dumps(result, indent=2)
         except Exception as e:
@@ -142,9 +150,10 @@ def init_competition_tools(mcp_instance):
                 try:
                     # Best effort to clean up temp dir
                     import shutil
+
                     shutil.rmtree(path, ignore_errors=True)
                 except OSError:
-                    pass # os.rmdir only works for empty dirs
+                    pass  # os.rmdir only works for empty dirs
             return f"Error downloading competition files: {str(e)}"
 
     @mcp_instance.tool()
@@ -165,13 +174,19 @@ def init_competition_tools(mcp_instance):
             files = api.competition_list_files(competition)
             result = []
 
-            for file_obj in files: # Renamed 'file' to 'file_obj' to avoid shadowing built-in
-                creation_date_val = getattr(file_obj, 'creationDate', None)
+            for (
+                file_obj
+            ) in files:  # Renamed 'file' to 'file_obj' to avoid shadowing built-in
+                creation_date_val = getattr(file_obj, "creationDate", None)
                 result.append(
                     {
-                        "name": getattr(file_obj, 'name', None),
-                        "size": getattr(file_obj, 'size', None), # Or getattr(file_obj, 'sizeBytes', None) - check kaggle lib
-                        "creationDate": str(creation_date_val) if creation_date_val else None,
+                        "name": getattr(file_obj, "name", None),
+                        "size": getattr(
+                            file_obj, "size", None
+                        ),  # Or getattr(file_obj, 'sizeBytes', None) - check kaggle lib
+                        "creationDate": str(creation_date_val)
+                        if creation_date_val
+                        else None,
                     }
                 )
 
@@ -198,16 +213,16 @@ def init_competition_tools(mcp_instance):
             result = []
 
             for sub in submissions:
-                date_val = getattr(sub, 'date', None)
+                date_val = getattr(sub, "date", None)
                 result.append(
                     {
-                        "ref": getattr(sub, 'ref', None),
-                        "fileName": getattr(sub, 'fileName', None),
+                        "ref": getattr(sub, "ref", None),
+                        "fileName": getattr(sub, "fileName", None),
                         "date": str(date_val) if date_val else None,
-                        "description": getattr(sub, 'description', None),
-                        "status": getattr(sub, 'status', None),
-                        "publicScore": getattr(sub, 'publicScore', None),
-                        "privateScore": getattr(sub, 'privateScore', None),
+                        "description": getattr(sub, "description", None),
+                        "status": getattr(sub, "status", None),
+                        "publicScore": getattr(sub, "publicScore", None),
+                        "privateScore": getattr(sub, "privateScore", None),
                     }
                 )
 
@@ -230,47 +245,55 @@ def init_competition_tools(mcp_instance):
             return msg
 
         try:
-            leaderboard = api.competition_leaderboard_view(competition) # This returns a dict directly
+            leaderboard = api.competition_leaderboard_view(
+                competition
+            )  # This returns a dict directly
             # The kaggle API for leaderboard_view already returns a list of dictionaries if successful
             # or raises an exception.
             # No need to iterate and convert if it's already in the desired format
-            if isinstance(leaderboard, dict) and 'submissions' in leaderboard:
+            if isinstance(leaderboard, dict) and "submissions" in leaderboard:
                 # The actual data might be under a key like 'submissions'
                 # or it might be the direct list of entries.
                 # Let's assume it's a list of entries directly or under 'submissions'.
                 # This part depends heavily on the exact structure returned by `competition_leaderboard_view`
                 # For now, assuming `leaderboard` is the list of entries.
                 # If `leaderboard` is `{'submissions': [...]}`, then use `leaderboard['submissions']`
-                
+
                 # The Kaggle API's competition_leaderboard_view typically returns the response
                 # as a string (CSV or JSON depending on internal implementation).
                 # The KaggleApi class itself might parse it.
                 # If it's a string, you might need to parse it (e.g., CSV to JSON).
                 # However, the library often returns model objects or dicts.
-                
+
                 # Let's assume it returns a list of objects for now and apply getattr
                 processed_leaderboard = []
-                if isinstance(leaderboard, list): # If it's a list of objects/dicts
+                if isinstance(leaderboard, list):  # If it's a list of objects/dicts
                     for entry in leaderboard:
-                        submission_date_val = getattr(entry, 'submissionDate', None)
+                        submission_date_val = getattr(entry, "submissionDate", None)
                         processed_leaderboard.append(
                             {
-                                "teamId": getattr(entry, 'teamId', None),
-                                "teamName": getattr(entry, 'teamName', None),
-                                "submissionDate": str(submission_date_val) if submission_date_val else None,
-                                "score": getattr(entry, 'score', None),
-                                "rank": getattr(entry, 'rank', None),
+                                "teamId": getattr(entry, "teamId", None),
+                                "teamName": getattr(entry, "teamName", None),
+                                "submissionDate": str(submission_date_val)
+                                if submission_date_val
+                                else None,
+                                "score": getattr(entry, "score", None),
+                                "rank": getattr(entry, "rank", None),
                             }
                         )
                     return json.dumps(processed_leaderboard, indent=2)
-                elif isinstance(leaderboard, dict): # If it's a dict, maybe data is nested
-                     # This case needs more info on actual structure
-                    return json.dumps(leaderboard, indent=2) # Default to dumping the dict
-                else: # If it's a raw string (e.g. CSV data)
+                elif isinstance(
+                    leaderboard, dict
+                ):  # If it's a dict, maybe data is nested
+                    # This case needs more info on actual structure
+                    return json.dumps(
+                        leaderboard, indent=2
+                    )  # Default to dumping the dict
+                else:  # If it's a raw string (e.g. CSV data)
                     return str(leaderboard)
 
             # Fallback if not a dict with 'submissions' or a direct list
-            return json.dumps(leaderboard, indent=2) # Convert whatever it is to JSON
+            return json.dumps(leaderboard, indent=2)  # Convert whatever it is to JSON
         except Exception as e:
             return f"Error retrieving leaderboard: {str(e)}"
 
@@ -296,8 +319,8 @@ def init_competition_tools(mcp_instance):
                 return f"Error: File not found at {file_path}"
 
             # Get file size and last modified date
-            file_size = os.path.getsize(file_path)
-            last_modified = int(os.path.getmtime(file_path))
+            # file_size = os.path.getsize(file_path)
+            # last_modified = int(os.path.getmtime(file_path))
 
             # The kaggle API handles this internally now with `competition_submit`
             # Generate submission URL
@@ -314,14 +337,13 @@ def init_competition_tools(mcp_instance):
             # Simpler submission with newer Kaggle API versions
             response = api.competition_submit(file_path, message, competition)
 
-
             # The response object might have a 'message' or 'status' attribute
             status_message = "Submission successful."
-            if hasattr(response, 'message') and response.message:
+            if hasattr(response, "message") and response.message:
                 status_message = response.message
-            elif hasattr(response, 'status') and response.status:
+            elif hasattr(response, "status") and response.status:
                 status_message = f"Submission status: {response.status}"
-            
+
             return status_message
         except Exception as e:
             return f"Error submitting to competition: {str(e)}"
