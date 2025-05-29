@@ -6,7 +6,7 @@ This module provides the base server configuration and handles imports of all to
 
 import argparse
 import json
-import logging
+from loguru import logger
 import os
 import sys
 from pathlib import Path
@@ -17,8 +17,8 @@ from tools import auth, competitions, datasets, kernels, models, config
 from mcp.server.fastmcp import FastMCP
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger.add(sys.stderr, level="INFO")
+logger.add("app.log", rotation="500 MB", retention="10 days", level="DEBUG")
 
 parser = argparse.ArgumentParser(description="Kaggle MCP Server")
 parser.add_argument(
@@ -96,10 +96,6 @@ def main():
     """Run the MCP server."""
     # Load Kaggle API credentials from common locations
     load_kaggle_config()
-
-    # Set log level
-    if args.debug:
-        logging.getLogger().setLevel(logging.DEBUG)
 
     # Run the server
     try:
