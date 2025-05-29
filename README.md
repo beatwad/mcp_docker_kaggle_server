@@ -1,6 +1,6 @@
 # Kaggle-MCP: Kaggle API Integration for Docker
 
-Fork of [this](https://github.com/54yyyu/kaggle-mcp) repository which works inside Docker.
+Fork of [this](https://github.com/54yyyu/kaggle-mcp) repository which was modified to run inside Docker container.
 
 ## Prerequisites
 
